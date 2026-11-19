@@ -28,7 +28,7 @@ body{ font-family:var(--fuente-sans); color:var(--texto); background:var(--verde
 a{ color:var(--verde-700); text-decoration:none; transition:color var(--trans); }
 a:hover{ color:var(--verde-500); }
 
-#aceptar, #rechazar{ position:absolute; top:-9999px; }
+/* ===== COOKIES (controladas por JS, no por :target) ===== */
 .cookie-overlay{ position:fixed; inset:0; background:rgba(10,26,13,0.82);
   backdrop-filter:blur(6px); z-index:9998; }
 .cookie-banner{ position:fixed; inset:0; display:flex; align-items:center;
@@ -45,7 +45,8 @@ a:hover{ color:var(--verde-500); }
 .cookie-acciones{ display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
 .cookie-acciones .boton-cookie{ display:inline-block; padding:14px 34px; border-radius:3px;
   font-weight:700; font-size:0.88rem; text-decoration:none; transition:all var(--trans);
-  min-width:150px; text-align:center; font-family:var(--fuente-sans); letter-spacing:0.03em; }
+  min-width:150px; text-align:center; font-family:var(--fuente-sans); letter-spacing:0.03em;
+  cursor:pointer; }
 .boton-cookie.aceptar{ background:var(--verde-700); color:var(--blanco); border:1.5px solid var(--verde-700); }
 .boton-cookie.aceptar:hover{ background:var(--verde-500); border-color:var(--verde-500); }
 .boton-cookie.rechazar{ background:transparent; color:var(--verde-800); border:1.5px solid var(--verde-300); }
@@ -53,14 +54,19 @@ a:hover{ color:var(--verde-500); }
 .cookie-enlaces{ margin-top:22px; font-size:0.8rem; color:var(--texto-suave); }
 .cookie-enlaces a{ color:var(--verde-700); font-weight:600; }
 .cookie-enlaces a:hover{ text-decoration:underline; }
-#aceptar:target ~ .cookie-overlay, #aceptar:target ~ .cookie-banner,
-#rechazar:target ~ .cookie-overlay, #rechazar:target ~ .cookie-banner{ display:none; }
-.contenido-principal{ display:none; }
-#aceptar:target ~ .contenido-principal, #rechazar:target ~ .contenido-principal{
+
+/* Estados controlados por JS */
+body.cookies-pendientes .cookie-overlay{ display:block; }
+body.cookies-pendientes .cookie-banner{ display:flex; }
+body:not(.cookies-pendientes) .cookie-overlay,
+body:not(.cookies-pendientes) .cookie-banner{ display:none; }
+body.cookies-pendientes .contenido-principal{ display:none; }
+body:not(.cookies-pendientes) .contenido-principal{
   display:block; animation:aparecer 0.5s ease; }
 @keyframes aparecer{ from{ opacity:0; transform:translateY(14px); }
   to{ opacity:1; transform:translateY(0); } }
 
+/* ===== RESTO DEL DISEÑO ===== */
 .cabecera{ position:sticky; top:0; z-index:1000; background:rgba(242,249,243,0.95);
   backdrop-filter:blur(12px); border-bottom:1px solid var(--linea); }
 .barra-nav{ display:flex; align-items:center; justify-content:space-between;
@@ -195,19 +201,17 @@ p:last-child{ margin-bottom:0; }
 }
 </style>
 </head>
-<body>
+<body class="cookies-pendientes">
 
-<span id="aceptar"></span>
-<span id="rechazar"></span>
-
+<!-- ===== MODAL DE COOKIES ===== -->
 <div class="cookie-overlay"></div>
 <div class="cookie-banner" role="dialog" aria-modal="true" aria-labelledby="titulo-cookies">
   <div class="cookie-modal">
     <h2 id="titulo-cookies">Aviso de cookies</h2>
     <p>Usamos cookies para mejorar tu experiencia y analizar el tráfico de forma anónima. Al aceptar, nos permites ofrecerte contenido más relevante. También puedes rechazar las cookies no esenciales.</p>
     <div class="cookie-acciones">
-      <a href="#rechazar" class="boton-cookie rechazar">Rechazar</a>
-      <a href="#aceptar" class="boton-cookie aceptar">Aceptar cookies</a>
+      <button type="button" class="boton-cookie rechazar" data-cookie="rechazar">Rechazar</button>
+      <button type="button" class="boton-cookie aceptar" data-cookie="aceptar">Aceptar cookies</button>
     </div>
     <div class="cookie-enlaces">
       <a href="privacidad.html">Política de Privacidad</a> ·
@@ -220,12 +224,12 @@ p:last-child{ margin-bottom:0; }
 
   <header class="cabecera">
     <nav class="barra-nav" aria-label="Navegación principal">
-      <a href="pulso-vial.html" class="logo">
+      <a href="index.html" class="logo">
         <span class="logo-icono">💓</span>
         <span>Pulso Vial</span>
       </a>
       <ul class="menu">
-        <li><a href="pulso-vial.html" class="activo">Inicio</a></li>
+        <li><a href="index.html" class="activo">Inicio</a></li>
         <li><a href="#ritmo">Ritmo</a></li>
         <li><a href="#senales">Señales</a></li>
         <li><a href="#pausas">Pausas</a></li>
@@ -379,6 +383,33 @@ p:last-child{ margin-bottom:0; }
   </footer>
 
 </div>
+
+<!-- ===== SCRIPT DE COOKIES ===== -->
+<script>
+(function () {
+  var KEY = 'pulsovial-cookies';
+  var body = document.body;
+  var botones = document.querySelectorAll('.boton-cookie');
+
+  function aplicarDecision() {
+    body.classList.remove('cookies-pendientes');
+  }
+
+  try {
+    if (localStorage.getItem(KEY)) {
+      aplicarDecision();
+    }
+  } catch (e) { /* localStorage bloqueado */ }
+
+  botones.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var decision = btn.getAttribute('data-cookie');
+      try { localStorage.setItem(KEY, decision); } catch (e) {}
+      aplicarDecision();
+    });
+  });
+})();
+</script>
 
 </body>
 </html>
