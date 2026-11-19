@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pulso Vial | Siente el ritmo de la movilidad</title>
+<meta name="description" content="Pulso Vial es una guía educativa sobre el ritmo de la movilidad y la seguridad en la vía. Contenido libre y gratuito.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#0f1f12">
+<link rel="icon" href="img/favicon.ico" type="image/x-icon">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root{
+  --verde-950:#0a1a0d; --verde-900:#0f2413; --verde-800:#163a1c;
+  --verde-700:#1e4d26; --verde-600:#2a6633; --verde-500:#3a8444;
+  --verde-400:#5aa565; --verde-300:#8cc795; --verde-200:#bfe3c4;
+  --verde-100:#e3f2e5; --verde-50:#f2f9f3;
+  --blanco:#ffffff; --texto:#10241a; --texto-suave:#3d5a44;
+  --linea:#bfe3c4; --max:1140px;
+  --trans:0.35s cubic-bezier(0.25,0.46,0.45,0.94);
+  --fuente:'Palatino Linotype','Book Antiqua',Georgia,serif;
+  --fuente-sans:'Segoe UI',-apple-system,BlinkMacSystemFont,Roboto,sans-serif;
+}
+html, body{ scroll-behavior:smooth; }
+body{ font-family:var(--fuente-sans); color:var(--texto); background:var(--verde-50);
+  line-height:1.85; font-size:16px; -webkit-font-smoothing:antialiased; min-height:100vh; }
+.contenedor{ width:100%; max-width:var(--max); margin:0 auto; padding:0 32px; }
+a{ color:var(--verde-700); text-decoration:none; transition:color var(--trans); }
+a:hover{ color:var(--verde-500); }
+
+#aceptar, #rechazar{ position:absolute; top:-9999px; }
+.cookie-overlay{ position:fixed; inset:0; background:rgba(10,26,13,0.82);
+  backdrop-filter:blur(6px); z-index:9998; }
+.cookie-banner{ position:fixed; inset:0; display:flex; align-items:center;
+  justify-content:center; padding:24px; z-index:9999; }
+.cookie-modal{ background:var(--blanco); max-width:520px; width:100%;
+  padding:48px 40px; border-radius:4px; box-shadow:0 30px 80px rgba(0,0,0,0.45);
+  text-align:center; border:1px solid var(--verde-300); border-top:4px solid var(--verde-700);
+  animation:entradaCookie 0.55s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes entradaCookie{ from{ transform:scale(0.9) translateY(24px); opacity:0; }
+  to{ transform:scale(1) translateY(0); opacity:1; } }
+.cookie-modal h2{ font-family:var(--fuente); font-size:1.55rem; margin-bottom:12px;
+  color:var(--verde-900); font-weight:700; line-height:1.25; }
+.cookie-modal p{ font-size:0.93rem; color:var(--texto-suave); margin-bottom:30px; line-height:1.7; }
+.cookie-acciones{ display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+.cookie-acciones .boton-cookie{ display:inline-block; padding:14px 34px; border-radius:3px;
+  font-weight:700; font-size:0.88rem; text-decoration:none; transition:all var(--trans);
+  min-width:150px; text-align:center; font-family:var(--fuente-sans); letter-spacing:0.03em; }
+.boton-cookie.aceptar{ background:var(--verde-700); color:var(--blanco); border:1.5px solid var(--verde-700); }
+.boton-cookie.aceptar:hover{ background:var(--verde-500); border-color:var(--verde-500); }
+.boton-cookie.rechazar{ background:transparent; color:var(--verde-800); border:1.5px solid var(--verde-300); }
+.boton-cookie.rechazar:hover{ border-color:var(--verde-600); color:var(--verde-600); }
+.cookie-enlaces{ margin-top:22px; font-size:0.8rem; color:var(--texto-suave); }
+.cookie-enlaces a{ color:var(--verde-700); font-weight:600; }
+.cookie-enlaces a:hover{ text-decoration:underline; }
+#aceptar:target ~ .cookie-overlay, #aceptar:target ~ .cookie-banner,
+#rechazar:target ~ .cookie-overlay, #rechazar:target ~ .cookie-banner{ display:none; }
+.contenido-principal{ display:none; }
+#aceptar:target ~ .contenido-principal, #rechazar:target ~ .contenido-principal{
+  display:block; animation:aparecer 0.5s ease; }
+@keyframes aparecer{ from{ opacity:0; transform:translateY(14px); }
+  to{ opacity:1; transform:translateY(0); } }
+
+.cabecera{ position:sticky; top:0; z-index:1000; background:rgba(242,249,243,0.95);
+  backdrop-filter:blur(12px); border-bottom:1px solid var(--linea); }
+.barra-nav{ display:flex; align-items:center; justify-content:space-between;
+  padding:20px 32px; max-width:var(--max); margin:0 auto; }
+.logo{ display:flex; align-items:center; gap:14px; font-family:var(--fuente);
+  font-weight:700; font-size:1.3rem; color:var(--verde-900); letter-spacing:-0.01em; }
+.logo-icono{ width:38px; height:38px; border:1.5px solid var(--verde-600);
+  color:var(--verde-700); border-radius:50%; display:grid; place-items:center;
+  font-size:1rem; transition:all var(--trans); }
+.logo:hover .logo-icono{ background:var(--verde-600); color:var(--blanco); }
+.menu{ display:flex; gap:4px; list-style:none; align-items:center; flex-wrap:wrap; }
+.menu a{ color:var(--texto-suave); padding:6px 14px; font-size:0.82rem;
+  font-weight:600; letter-spacing:0.02em; border-radius:4px; position:relative; }
+.menu a::after{ content:''; position:absolute; left:14px; right:14px; bottom:2px;
+  height:1.5px; background:var(--verde-600); transform:scaleX(0); transform-origin:left;
+  transition:transform var(--trans); }
+.menu a:hover{ color:var(--verde-800); }
+.menu a:hover::after{ transform:scaleX(1); }
+.menu a.activo{ color:var(--verde-900); }
+.menu a.activo::after{ transform:scaleX(1); }
+.franja-valores{ background:var(--verde-900); color:var(--verde-200); padding:9px 0;
+  text-align:center; font-size:0.72rem; font-weight:700; letter-spacing:0.18em;
+  text-transform:uppercase; }
+
+.hero{ background:var(--verde-50); padding:110px 0 90px; position:relative;
+  overflow:hidden; border-bottom:1px solid var(--linea); }
+.hero::before{ content:'💓'; position:absolute; top:50%; right:4%;
+  transform:translateY(-50%); font-size:22rem; color:var(--verde-100);
+  line-height:1; z-index:0; opacity:0.7; pointer-events:none; }
+.hero .contenedor{ position:relative; z-index:2; }
+.hero-grid{ display:grid; grid-template-columns:1.4fr 1fr; gap:60px; align-items:end; }
+.hero h1{ font-family:var(--fuente); font-size:clamp(2.4rem,5.5vw,4rem);
+  line-height:1.08; font-weight:700; color:var(--verde-900);
+  letter-spacing:-0.02em; margin-bottom:24px; }
+.hero h1 em{ font-style:italic; color:var(--verde-600); }
+.hero p.subtitulo{ font-size:1.1rem; color:var(--texto-suave); max-width:520px; line-height:1.7; }
+.hero-lateral{ border-left:1px solid var(--linea); padding-left:34px; }
+.hero-lateral .etiqueta-mini{ display:block; font-size:0.68rem; font-weight:800;
+  letter-spacing:0.2em; text-transform:uppercase; color:var(--verde-600); margin-bottom:18px; }
+.hero-lateral ul{ list-style:none; display:grid; gap:10px; }
+.hero-lateral li{ display:flex; justify-content:space-between; align-items:baseline;
+  padding-bottom:9px; border-bottom:1px dashed var(--linea); font-size:0.9rem; }
+.hero-lateral li span:first-child{ font-weight:600; color:var(--texto); }
+.hero-lateral li span:last-child{ color:var(--texto-suave); font-size:0.78rem; }
+.hero-botones{ display:flex; gap:14px; flex-wrap:wrap; margin-top:44px; }
+.boton{ display:inline-block; padding:13px 30px; font-weight:700; font-size:0.85rem;
+  letter-spacing:0.04em; border-radius:3px; transition:all var(--trans);
+  font-family:var(--fuente-sans); cursor:pointer; }
+.boton.primario{ background:var(--verde-800); color:var(--blanco); border:1.5px solid var(--verde-800); }
+.boton.primario:hover{ background:var(--verde-600); border-color:var(--verde-600); }
+.boton.secundario{ background:transparent; color:var(--verde-800); border:1.5px solid var(--linea); }
+.boton.secundario:hover{ border-color:var(--verde-600); color:var(--verde-600); }
+
+.seccion{ padding:90px 0; border-bottom:1px solid var(--linea); }
+.seccion-encabezado{ max-width:700px; margin-bottom:52px; }
+.etiqueta-seccion{ display:inline-flex; align-items:center; gap:10px; font-size:0.7rem;
+  font-weight:800; letter-spacing:0.2em; text-transform:uppercase;
+  color:var(--verde-600); margin-bottom:18px; }
+.etiqueta-seccion::before{ content:''; width:28px; height:1px; background:var(--verde-600); }
+h2{ font-family:var(--fuente); font-size:clamp(1.7rem,3.4vw,2.5rem);
+  font-weight:700; color:var(--verde-900); letter-spacing:-0.01em; line-height:1.18; }
+h3{ font-size:1.05rem; font-weight:700; color:var(--verde-800); margin-bottom:6px; }
+p{ margin:0 0 1.1rem; color:var(--texto); }
+p:last-child{ margin-bottom:0; }
+
+.rejilla{ display:grid; gap:20px; }
+.rejilla-3{ grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); }
+.rejilla-2{ grid-template-columns:repeat(auto-fit,minmax(290px,1fr)); }
+.tarjeta{ background:var(--blanco); border:1px solid var(--linea); padding:32px 28px;
+  transition:all var(--trans); }
+.tarjeta:hover{ border-color:var(--verde-500); transform:translateY(-3px); }
+.tarjeta .icono{ font-size:1.5rem; display:inline-block; margin-bottom:16px;
+  width:44px; height:44px; line-height:44px; text-align:center;
+  border:1px solid var(--linea); border-radius:50%; background:var(--verde-50); }
+.tarjeta:hover .icono{ background:var(--verde-100); border-color:var(--verde-300); }
+.tarjeta p{ font-size:0.92rem; color:var(--texto-suave); }
+
+.aviso{ padding:26px 32px; border:1px solid var(--linea);
+  border-left:3px solid var(--verde-600); background:var(--blanco); margin:26px 0; }
+.aviso h3{ margin-bottom:8px; }
+.aviso p{ font-size:0.94rem; }
+.aviso.exito{ border-left-color:var(--verde-700); background:var(--verde-100); }
+.aviso.info{ border-left-color:var(--verde-500); background:var(--verde-50); }
+
+.lista-ritmo{ display:grid; gap:0; border-top:1px solid var(--linea); margin:24px 0; }
+.lista-ritmo div{ display:flex; justify-content:space-between; align-items:baseline;
+  padding:16px 4px; border-bottom:1px solid var(--linea); font-size:0.95rem; }
+.lista-ritmo strong{ color:var(--verde-900); }
+.lista-ritmo span{ color:var(--texto-suave); font-size:0.86rem; }
+
+.banda-final{ background:var(--verde-900); color:var(--verde-200); padding:80px 0; text-align:center; }
+.banda-final h2{ color:var(--blanco); margin-bottom:20px; }
+.banda-final p{ font-size:1.08rem; color:rgba(255,255,255,0.82);
+  max-width:740px; margin:0 auto; line-height:1.8; }
+.banda-final strong{ color:var(--verde-200); }
+
+.pie{ background:var(--verde-50); color:var(--texto-suave);
+  padding:70px 0 30px; border-top:1px solid var(--linea); }
+.pie-rejilla{ display:grid; grid-template-columns:1.4fr repeat(3,1fr);
+  gap:40px; margin-bottom:44px; }
+.pie h4{ color:var(--verde-900); margin-bottom:16px; font-family:var(--fuente);
+  font-size:1rem; letter-spacing:0.02em; }
+.pie p{ color:var(--texto-suave); font-size:0.9rem; }
+.pie ul{ list-style:none; padding:0; }
+.pie ul li{ margin-bottom:8px; }
+.pie ul a{ color:var(--texto-suave); font-size:0.9rem; }
+.pie ul a:hover{ color:var(--verde-700); }
+.pie-legal{ border-top:1px solid var(--linea); padding-top:26px;
+  font-size:0.8rem; text-align:center; color:var(--texto-suave); }
+.pie-legal a{ color:var(--texto-suave); margin:0 8px; }
+.pie-legal a:hover{ color:var(--verde-700); }
+
+@media (max-width:900px){
+  .hero{ padding:70px 0 60px; }
+  .hero::before{ font-size:14rem; right:-4%; }
+  .hero-grid{ grid-template-columns:1fr; gap:40px; }
+  .hero-lateral{ border-left:none; border-top:1px solid var(--linea);
+    padding-left:0; padding-top:28px; }
+  .pie-rejilla{ grid-template-columns:1fr 1fr; }
+  .seccion{ padding:60px 0; }
+}
+@media (max-width:700px){
+  .barra-nav{ padding:16px 20px; flex-wrap:wrap; gap:12px; }
+  .menu a{ padding:6px 10px; font-size:0.78rem; }
+  .contenedor{ padding:0 20px; }
+  .pie-rejilla{ grid-template-columns:1fr; gap:28px; }
+  .hero-botones{ flex-direction:column; align-items:stretch; }
+  .boton{ text-align:center; }
+  .cookie-modal{ padding:36px 24px; }
+  .cookie-acciones{ flex-direction:column; }
+  .cookie-acciones .boton-cookie{ width:100%; min-width:unset; }
+}
+</style>
+</head>
+<body>
+
+<span id="aceptar"></span>
+<span id="rechazar"></span>
+
+<div class="cookie-overlay"></div>
+<div class="cookie-banner" role="dialog" aria-modal="true" aria-labelledby="titulo-cookies">
+  <div class="cookie-modal">
+    <h2 id="titulo-cookies">Aviso de cookies</h2>
+    <p>Usamos cookies para mejorar tu experiencia y analizar el tráfico de forma anónima. Al aceptar, nos permites ofrecerte contenido más relevante. También puedes rechazar las cookies no esenciales.</p>
+    <div class="cookie-acciones">
+      <a href="#rechazar" class="boton-cookie rechazar">Rechazar</a>
+      <a href="#aceptar" class="boton-cookie aceptar">Aceptar cookies</a>
+    </div>
+    <div class="cookie-enlaces">
+      <a href="privacidad.html">Política de Privacidad</a> ·
+      <a href="politicas-cookies.html">Política de Cookies</a>
+    </div>
+  </div>
+</div>
+
+<div class="contenido-principal">
+
+  <header class="cabecera">
+    <nav class="barra-nav" aria-label="Navegación principal">
+      <a href="pulso-vial.html" class="logo">
+        <span class="logo-icono">💓</span>
+        <span>Pulso Vial</span>
+      </a>
+      <ul class="menu">
+        <li><a href="pulso-vial.html" class="activo">Inicio</a></li>
+        <li><a href="#ritmo">Ritmo</a></li>
+        <li><a href="#senales">Señales</a></li>
+        <li><a href="#pausas">Pausas</a></li>
+        <li><a href="#salud">Salud vial</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="franja-valores">💓 Siente el ritmo de la movilidad · Educación gratuita · Sin pagos · Sin donaciones</div>
+
+  <main>
+    <section class="hero" id="inicio">
+      <div class="contenedor">
+        <div class="hero-grid">
+          <div>
+            <h1>La movilidad tiene un <em>ritmo</em>, aprende a sentirlo</h1>
+            <p class="subtitulo">Pulso Vial es una guía educativa sobre el ritmo de la movilidad y la seguridad en la vía. Aprende a moverte con cadencia: ni con prisa, ni con pausa, con atención.</p>
+            <div class="hero-botones">
+              <a href="#ritmo" class="boton primario">Sentir el ritmo</a>
+              <a href="#salud" class="boton secundario">Salud vial</a>
+            </div>
+          </div>
+          <div class="hero-lateral">
+            <span class="etiqueta-mini">En esta guía</span>
+            <ul>
+              <li><span>Ritmo vial</span><span>01</span></li>
+              <li><span>Señales</span><span>02</span></li>
+              <li><span>Pausas activas</span><span>03</span></li>
+              <li><span>Salud vial</span><span>04</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="seccion" id="ritmo">
+      <div class="contenedor">
+        <div class="seccion-encabezado">
+          <span class="etiqueta-seccion">Sección 1 · Ritmo vial</span>
+          <h2>Ni tan rápido, ni tan lento</h2>
+          <p>El ritmo vial es la velocidad y la cadencia con la que nos movemos por la ciudad. Encontrar el ritmo adecuado reduce siniestros y mejora la convivencia.</p>
+        </div>
+        <div class="lista-ritmo">
+          <div><strong>Zonas escolares</strong><span>30 km/h o menos</span></div>
+          <div><strong>Zonas residenciales</strong><span>30–40 km/h</span></div>
+          <div><strong>Vías urbanas principales</strong><span>50–60 km/h</span></div>
+          <div><strong>Vías rurales</strong><span>80–90 km/h</span></div>
+        </div>
+        <div class="aviso info">
+          <h3>💡 Dato clave</h3>
+          <p>Reducir la velocidad en 10 km/h puede disminuir hasta en un <strong>30% la probabilidad de un siniestro grave</strong>.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="seccion" id="senales">
+      <div class="contenedor">
+        <div class="seccion-encabezado">
+          <span class="etiqueta-seccion">Sección 2 · Señales</span>
+          <h2>El cuerpo también habla en la vía</h2>
+        </div>
+        <div class="rejilla rejilla-3">
+          <div class="tarjeta"><span class="icono">👁️</span><h3>Mirada</h3><p>Mirar a los ojos del otro actor vial antes de cruzar o girar.</p></div>
+          <div class="tarjeta"><span class="icono">✋</span><h3>Mano</h3><p>Levantar la mano para agradecer o pedir paso con claridad.</p></div>
+          <div class="tarjeta"><span class="icono">💡</span><h3>Luces</h3><p>Usar direccionales y luces bajas para comunicar intenciones.</p></div>
+        </div>
+        <div class="aviso exito">
+          <h3>🌱 Comunicación no verbal</h3>
+          <p>Un gesto claro a tiempo evita malentendidos y reduce la tensión en la vía. La cortesía vial también es seguridad.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="seccion" id="pausas">
+      <div class="contenedor">
+        <div class="seccion-encabezado">
+          <span class="etiqueta-seccion">Sección 3 · Pausas</span>
+          <h2>La prisa es el peor copiloto</h2>
+          <p>Salir con tiempo, hacer pausas activas y respirar antes de conducir reduce el estrés y mejora la atención al volante.</p>
+        </div>
+        <div class="rejilla rejilla-2">
+          <div class="tarjeta"><span class="icono">🧘</span><h3>Antes de conducir</h3><p>Respira profundo tres veces y revisa tu estado emocional.</p></div>
+          <div class="tarjeta"><span class="icono">⏱️</span><h3>En trayectos largos</h3><p>Detente cada dos horas para estirar y descansar la vista.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="seccion" id="salud">
+      <div class="contenedor">
+        <div class="seccion-encabezado">
+          <span class="etiqueta-seccion">Sección 4 · Salud vial</span>
+          <h2>Cuidar el cuerpo es cuidar la vía</h2>
+        </div>
+        <div class="rejilla rejilla-3">
+          <div class="tarjeta"><span class="icono">😴</span><h3>Descanso</h3><p>Dormir bien antes de conducir reduce el riesgo de microsueños.</p></div>
+          <div class="tarjeta"><span class="icono">💧</span><h3>Hidratación</h3><p>Beber agua mejora la concentración y reduce la fatiga.</p></div>
+          <div class="tarjeta"><span class="icono">👓</span><h3>Visión</h3><p>Revisar la vista periódicamente evita errores de percepción.</p></div>
+        </div>
+        <div class="aviso info">
+          <h3>📢 Comparte</h3>
+          <p>Comparte esta guía con tu familia, amigos o comunidad. Cuidar la salud vial también salva vidas.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="banda-final">
+      <div class="contenedor" style="max-width:820px;">
+        <h2>Compromiso de transparencia</h2>
+        <p><strong>Pulso Vial</strong> es una guía educativa <strong>100% financiada y escrita por su autor</strong>. No se aceptan donaciones, no se procesan pagos y no se vende ningún producto o servicio. Todo el contenido es de <strong>libre acceso</strong>.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="pie">
+    <div class="contenedor">
+      <div class="pie-rejilla">
+        <div>
+          <h4>💓 Pulso Vial</h4>
+          <p>Guía educativa y gratuita sobre el ritmo de la movilidad y la salud vial.</p>
+        </div>
+        <div>
+          <h4>Temas</h4>
+          <ul>
+            <li><a href="#ritmo">Ritmo vial</a></li>
+            <li><a href="#senales">Señales</a></li>
+            <li><a href="#pausas">Pausas</a></li>
+            <li><a href="#salud">Salud vial</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="privacidad.html">Privacidad</a></li>
+            <li><a href="politicas-cookies.html">Cookies</a></li>
+            <li><a href="contacto.html">Contacto</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Contacto</h4>
+          <ul>
+            <li>📧 <a href="mailto:contacto@pulsovial.co">contacto@pulsovial.co</a></li>
+            <li>📞 Emergencias: 123</li>
+          </ul>
+        </div>
+      </div>
+      <div class="pie-legal">
+        <p>© 2026 Pulso Vial — Todos los derechos reservados.</p>
+        <p><a href="privacidad.html">Privacidad</a> · <a href="politicas-cookies.html">Cookies</a> · <a href="contacto.html">Contacto</a></p>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+</body>
+</html>
