@@ -28,7 +28,7 @@ body{ font-family:var(--fuente-sans); color:var(--texto); background:var(--verde
 a{ color:var(--verde-700); text-decoration:none; transition:color var(--trans); }
 a:hover{ color:var(--verde-500); }
 
-/* ===== COOKIES (controladas por JS, no por :target) ===== */
+/* ===== COOKIES ===== */
 .cookie-overlay{ position:fixed; inset:0; background:rgba(10,26,13,0.82);
   backdrop-filter:blur(6px); z-index:9998; }
 .cookie-banner{ position:fixed; inset:0; display:flex; align-items:center;
@@ -55,7 +55,7 @@ a:hover{ color:var(--verde-500); }
 .cookie-enlaces a{ color:var(--verde-700); font-weight:600; }
 .cookie-enlaces a:hover{ text-decoration:underline; }
 
-/* Estados controlados por JS */
+/* Estado: mientras no se interactúe, el modal está visible */
 body.cookies-pendientes .cookie-overlay{ display:block; }
 body.cookies-pendientes .cookie-banner{ display:flex; }
 body:not(.cookies-pendientes) .cookie-overlay,
@@ -66,7 +66,7 @@ body:not(.cookies-pendientes) .contenido-principal{
 @keyframes aparecer{ from{ opacity:0; transform:translateY(14px); }
   to{ opacity:1; transform:translateY(0); } }
 
-/* ===== RESTO DEL DISEÑO ===== */
+/* ===== RESTO ===== */
 .cabecera{ position:sticky; top:0; z-index:1000; background:rgba(242,249,243,0.95);
   backdrop-filter:blur(12px); border-bottom:1px solid var(--linea); }
 .barra-nav{ display:flex; align-items:center; justify-content:space-between;
@@ -384,28 +384,20 @@ p:last-child{ margin-bottom:0; }
 
 </div>
 
-<!-- ===== SCRIPT DE COOKIES ===== -->
+<!-- ===== SCRIPT DE COOKIES (sin localStorage: aparece siempre) ===== -->
 <script>
 (function () {
-  var KEY = 'pulsovial-cookies';
   var body = document.body;
   var botones = document.querySelectorAll('.boton-cookie');
 
-  function aplicarDecision() {
-    body.classList.remove('cookies-pendientes');
-  }
-
-  try {
-    if (localStorage.getItem(KEY)) {
-      aplicarDecision();
-    }
-  } catch (e) { /* localStorage bloqueado */ }
+  // La clase "cookies-pendientes" ya está en el <body>, así que el modal
+  // se muestra siempre al cargar la página, sin importar visitas previas.
 
   botones.forEach(function (btn) {
     btn.addEventListener('click', function () {
-      var decision = btn.getAttribute('data-cookie');
-      try { localStorage.setItem(KEY, decision); } catch (e) {}
-      aplicarDecision();
+      // Solo ocultamos el modal en esta visita. Al recargar o volver
+      // a entrar al enlace, volverá a aparecer.
+      body.classList.remove('cookies-pendientes');
     });
   });
 })();
